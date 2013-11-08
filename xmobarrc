@@ -1,0 +1,41 @@
+Config { font = "xft:Terminus:size=12:antialias=false"
+
+, bgColor = "#222222"
+
+, fgColor = "grey"
+
+, position = TopW L 95
+
+, commands = [ Run Weather "VOMM" ["-t"," C","-L","64","-H","77","--normal","green","--high","red","--low","lightblue"] 36000
+
+, Run MultiCpu ["-t","CPU: % %", "-L", "40", "-H", "60", "-l", "lightblue", "-n", "white", "-h", "red"] 10
+
+, Run CpuFreq ["-t", " ", "-L", "0", "-H", "2", "-l", "lightblue", "-n","white", "-h", "red"] 50
+
+, Run Com "/home/ahosek/apps/scripts/getcoretemp.sh" [] "coreTemp" 10
+
+--, Run CoreTemp ["-t", "C C", "-L", "40", "-H", "60", "-l", "lightblue", "-n", "white", "-h", "red"] 50
+
+, Run Memory ["-t","Mem: %"] 10
+
+, Run Swap [] 10
+
+, Run Wireless "wlan0" ["-t","wlan0: %","-L","0","-H","32","--normal","green","--high","red"] 10
+
+, Run Battery ["-t","Batt: %","-L","25","-H","75","--low","#FF0000","--normal","#F9FF00","--high","#00FF00"] 600
+
+, Run Com "/home/ahosek/apps/scripts/getvolume.sh" [] "myVolume" 10
+
+, Run Date "%a %b %_d %I:%M %p" "date" 10
+
+, Run StdinReader
+
+]
+
+, sepChar = "%"
+
+, alignSep = "}{"
+
+, template = "%StdinReader% }{ %multicpu% %cpufreq% %coreTemp% %memory% %swap% %wlan0wi% %battery% Vol: %myVolume% Weather: %VOMM% %date%"
+
+}
