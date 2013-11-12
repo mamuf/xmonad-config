@@ -20,6 +20,7 @@ import Data.Ratio ((%)) -- for IM
 import XMonad.Actions.FindEmptyWorkspace
 import XMonad.Actions.WindowGo
 
+import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig
 import qualified XMonad.StackSet as W
@@ -57,8 +58,8 @@ myMusicPlayPause :: X ()
 myMusicPlayPause        = spawn "~/apps/scripts/mpd-playpause.sh"
 
 {- custom *Config for easy swapping -}
---myConfig                = defaultConfig
-myConfig                = gnomeConfig
+myConfig                = defaultConfig
+--myConfig                = gnomeConfig
 
 
 {- Keys -}
@@ -74,12 +75,12 @@ myKeysP =
       , (fn, mask) <- [(W.greedyView, ""), (W.shift, "S-")]
   ]
   ++
-  [ ("M-t", spawn myTerminal) -- Run new terminal
+  [ ("M-t", spawn myTerminal)
   , ("M-f", spawn myFileManager)
-  , ("M-p", spawn myModP) -- Run Mod-P app
+  , ("M-p", spawn myModP)
   , ("M-C-<Escape>", kill) -- close window
 
-  , ("M-S-q", spawn myLogout)
+--  , ("M-S-q", spawn myLogout)
   , ("M-S-l", spawn myLock)
   , ("M-S-o", spawn myGnomeControlCenter)
 
@@ -90,34 +91,22 @@ myKeysP =
   , ("M-u", sendMessage Taller)
   , ("M-i", sendMessage Wider)
   , ("M-r", sendMessage Reset)
---  , ("M-C-l", showLayout)
+
+  , ("M-C-s", namedScratchpadAction myScratchpads "stalonetray")
+  , ("M-C-n", namedScratchpadAction myScratchpads "nm-configuration-editor")
   ]
 
-{-
-showLayout = windows showLayout'
-
-xmessageLayout :: String -> X ()
-xmessageLayout layout = spawn $ "xmessage " ++ (show layout)
-
-showLayout' :: WindowSet -> WindowSet
-showLayout' ws = do
-  xmessageLayout "bla"
-  return ws
---showLayout' ws = return ws
--}
-
-myRemoveKeysP = [ "M-S-c" {- default kill -}
---                , "M-p" {- default mod-p -}
-                ]
+myRemoveKeysP = 
+  [ "M-S-c" {- default kill -}
+  ]
 
 
 {- Window rules -}
 
-myBaseManageHook = manageDocks <+> manageHook myConfig
+myBaseManageHook = namedScratchpadManageHook myScratchpads <+> manageDocks <+> manageHook myConfig
 
 myManageHook = composeAll
   [ myBaseManageHook
---   manageDocks <+> manageHook myConfig
   , className =? "Google-chrome" <||> className =? "Chromium" --> doShift "1"
   , className =? "Chromium" <&&> title =? "Chromium Preferences" --> doFloat
   , className =? "Eclipse" --> doShift "3"
@@ -128,8 +117,8 @@ myManageHook = composeAll
   , className =? "Sonata" --> doShift "9"
   , className =? "Wine" <&&> title =? "English-Czech - Lexicon" --> doShift "2"
   , className =? "Xmessage" --> doFloat
-  , className =? "Gimp-2.6" --> doShift myGimpWorkspace
-  , className =? "Gimp-2.6" <&&> windowRole =? "gimp-toolbox-color-dialog" --> doFloat
+  , className =? "Gimp-2.8" --> doShift myGimpWorkspace
+  , className =? "Gimp-2.8" <&&> windowRole =? "gimp-toolbox-color-dialog" --> doFloat
   , className =? "file_properties" --> doFloat
   , className =? "Gnome-system-monitor" --> doFloat
   , className =? "Gnome-display-properties" --> doFloat
@@ -140,7 +129,19 @@ myManageHook = composeAll
   ]
 
 windowRole = stringProperty "WM_WINDOW_ROLE"
-        
+
+{-- Scratchpads --}
+
+myScratchpads =        
+        [ NS "stalonetray" "stalonetray" (className =? "stalonetray" ) defaultFloating
+        , NS "nm-connection-editor" "nm-connection-editor" (className =? "Nm-connection-editor" ) defaultFloating
+        , NS "XMind" "XMind" (className =? "XMind" ) defaultFloating
+        , NS "evolution" "evolution" (className =? "Evolution" ) defaultFloating
+        , NS "pavucontrol" "pavucontrol" (className =? "Pavucontrol" ) defaultFloating
+        , NS "stardict" "stardict" (className =? "Stardict")
+                (customFloating $ W.RationalRect (2/5) (2/5) (1/2) (1/2))
+        ]
+
 
 {- Layouts -}
 
@@ -169,7 +170,7 @@ main = do
   xmproc <- spawnPipe "/usr/bin/xmobar ~/.xmonad/xmobarrc"
   xmonad $ withUrgencyHook NoUrgencyHook $ myConfig
     -- General configuration. Mostly uses custom my* functions defined earlier.
-    { manageHook         = myManageHook -- <+> manageHook gnomeConfig
+    { manageHook         = myManageHook
     , layoutHook         = myLayoutHook
     , workspaces         = myWorkspaces
     , terminal           = myTerminal

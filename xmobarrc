@@ -1,41 +1,26 @@
 Config { font = "xft:Terminus:size=12:antialias=false"
-
 , bgColor = "#222222"
-
 , fgColor = "grey"
-
-, position = TopW L 95
-
-, commands = [ Run Weather "VOMM" ["-t"," C","-L","64","-H","77","--normal","green","--high","red","--low","lightblue"] 36000
-
-, Run MultiCpu ["-t","CPU: % %", "-L", "40", "-H", "60", "-l", "lightblue", "-n", "white", "-h", "red"] 10
-
-, Run CpuFreq ["-t", " ", "-L", "0", "-H", "2", "-l", "lightblue", "-n","white", "-h", "red"] 50
-
-, Run Com "/home/ahosek/apps/scripts/getcoretemp.sh" [] "coreTemp" 10
-
---, Run CoreTemp ["-t", "C C", "-L", "40", "-H", "60", "-l", "lightblue", "-n", "white", "-h", "red"] 50
-
-, Run Memory ["-t","Mem: %"] 10
-
-, Run Swap [] 10
-
-, Run Wireless "wlan0" ["-t","wlan0: %","-L","0","-H","32","--normal","green","--high","red"] 10
-
-, Run Battery ["-t","Batt: %","-L","25","-H","75","--low","#FF0000","--normal","#F9FF00","--high","#00FF00"] 600
-
-, Run Com "/home/ahosek/apps/scripts/getvolume.sh" [] "myVolume" 10
-
-, Run Date "%a %b %_d %I:%M %p" "date" 10
-
-, Run StdinReader
-
-]
-
+, position = Static { xpos = 0, ypos = 0, width = 1600, height = 24 }
+, commands = [ Run Weather "LKPR" ["-t","<station>: <tempC>°C","-S","True","-L","15","-H","25","-n","green","-h","red","-l","lightblue"] 9000
+	, Run MultiCpu ["-t","CPU:<total>","-S","True","-p","3", "-L", "5", "-H", "60", "-l", "lightblue", "-n", "lightgrey", "-h", "red"] 10
+	, Run CpuFreq ["-t", " ", "-L", "0", "-H", "2", "-l", "lightblue", "-n","white", "-h", "red"] 50
+	, Run Com "/home/ahosek/apps/scripts/getcoretemp.sh" [] "getcoretemp" 50
+	--, Run ThermalZone 0 ["-t", "<id>: <temp>C"] 50
+	, Run CoreTemp ["-t", "C C", "-L", "40", "-H", "60", "-l", "lightblue", "-n", "white", "-h", "red"] 50
+	, Run Memory ["-t","M:<usedratio>", "-S","True", "-p","3","-H","80","-h","red"] 10
+	, Run Swap ["-t","S:<usedratio>","-S","True","-p","3"] 10
+	, Run Wireless "wlp3s0" ["-t","W: <essid> <quality>%","-L","30","-H","60","-l","orange"] 20
+	, Run Battery ["-L","50","-H","75","--high","green","--normal","yellow", "--low", "red"] 10	
+	, Run Com "/home/ahosek/apps/scripts/getvolume.sh" [] "myVolume" 10
+	--, Run Volume "default" "Master" [] 10
+	, Run Locks
+	, Run Kbd [("cz", "CZ"), ("us", "EN")]
+	, Run Date "%a %H:%M" "date" 10
+	, Run StdinReader
+	]
 , sepChar = "%"
-
 , alignSep = "}{"
-
-, template = "%StdinReader% }{ %multicpu% %cpufreq% %coreTemp% %memory% %swap% %wlan0wi% %battery% Vol: %myVolume% Weather: %VOMM% %date%"
+, template = "%StdinReader% } %date% %LKPR% {| %multicpu% %memory% %swap% %getcoretemp% | %wlp3s0wi% | %battery% | %locks% %kbd% "
 
 }
